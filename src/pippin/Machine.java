@@ -77,7 +77,7 @@ public class Machine extends Observable {
             if (immediate) {
                 throw new IllegalInstructionModeException("attempt to execute indirect STO");
             } else if (indirect) {
-                throw new IllegalInstructionModeException("attempt to execute indirect AND");
+                throw new IllegalInstructionModeException("attempt to execute indirect STO");
             } else {
             	memory.setData(operand, cpu.getAccumulator());
             }
@@ -101,6 +101,31 @@ public class Machine extends Observable {
             } 
             Runtime.getRuntime().halt(0);
             cpu.incrementCounter();
+        });
+        
+                INSTRUCTION_MAP.put("LOD", (int arg, boolean immediate, boolean indirect) -> {
+            if(immediate){
+                cpu.setAccumulator(arg);
+            }
+            else if(indirect){
+                int Y = memory.getData(arg);
+                cpu.setAccumulator(memory.getData(Y));
+            }
+            else{
+                cpu.setAccumulator(memory.getData(arg));
+            }
+            cpu.incrementCounter();
+        });
+        
+        INSTRUCTION_MAP.put("JUMP", (int arg, boolean immediate, boolean indirect) -> {
+            if(immediate){
+                throw new IllegalInstructionModeException("attempt to execute immediate JUMP");
+            }else if(indirect){
+                int Y = memory.getData(arg);
+                cpu.setProgramCounter(Y);
+            }else{
+                cpu.setProgramCounter(arg);
+            }
         });
     }
  }
